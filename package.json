@@ -1,0 +1,45 @@
+{
+  "name": "stampui",
+  "version": "1.2.0",
+  "description": "StampUI CLI: stamp production-ready React/Next.js UI blocks into your project",
+  "license": "MIT",
+  "homepage": "https://stampui.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StampUI/cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/StampUI/cli/issues"
+  },
+  "keywords": [
+    "stampui",
+    "ui",
+    "react",
+    "nextjs",
+    "components",
+    "blocks",
+    "cli",
+    "tailwindcss"
+  ],
+  "files": ["dist"],
+  "bin": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "prompts": "^2.4.2",
+    "@stampui/blocks": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/prompts": "^2.4.9",
+    "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
