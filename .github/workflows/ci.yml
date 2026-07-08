@@ -20,5 +20,7 @@ jobs:
         run: npm run typecheck
       - name: Build
         run: npm run build
+      - name: Check for secrets in build output
+        run: npm run check:secrets
       - name: Test
         run: npm test
