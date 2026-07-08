@@ -43,6 +43,8 @@ npx stampui add faq-accordion
 
 After installing it prints the files written, any npm dependencies the block needs, and the import path.
 
+Run it from a project root with a `package.json`; use `--force` only if you intentionally want to stamp into a bare directory.
+
 ### `stampui list`
 
 Lists every block in the registry, grouped by category. Filter by tier:
@@ -67,6 +69,7 @@ Checks installed blocks (from `stampui.lock.json`) against the latest registry v
 ```bash
 npx stampui update            # check everything
 npx stampui update hero-section
+npx stampui update --force    # allow updating in a bare directory
 ```
 
 Note: `update` overwrites the block's files with the latest upstream version. If you have local edits, review them with `git diff` before committing (a `stampui diff` command is on the roadmap, see issues).

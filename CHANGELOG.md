@@ -4,6 +4,7 @@ All notable changes to the `stampui` CLI. Dates follow the npm publish history. 
 
 ## Unreleased
 
+- `add` and `update` now fail fast outside a project root with a package.json, with a `--force` escape hatch for intentional bare-directory use
 - CLI `--version` now reads from package.json instead of a hardcoded string (previously reported 1.2.0 on the 1.2.1 build)
 - Pure helpers (config, lock file, license key validation) extracted to `src/lib.ts` with a vitest test suite
 - CI (typecheck, build, test) on GitHub Actions

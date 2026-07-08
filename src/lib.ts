@@ -32,6 +32,10 @@ export function readPackageJson(cwd: string = process.cwd()): Record<string, unk
   }
 }
 
+export function hasPackageJson(cwd: string = process.cwd()): boolean {
+  return fs.existsSync(path.join(cwd, "package.json"))
+}
+
 // ── Lock file ─────────────────────────────────────────────────────────────────
 
 export interface LockEntry {
