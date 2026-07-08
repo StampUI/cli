@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or idea
+    url: https://github.com/StampUI/ui/discussions
+    about: For general questions about StampUI, use the discussions board.
+  - name: License / billing / account
+    url: https://stampui.com
+    about: Commercial license and account questions are handled at stampui.com (support@stampui.com), not in this tracker.
