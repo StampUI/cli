@@ -33,7 +33,8 @@
     "dev": "tsc -w",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "prepublishOnly": "npm run build"
+    "check:secrets": "node scripts/check-dist-secrets.mjs",
+    "prepublishOnly": "npm run build && npm run check:secrets"
   },
   "dependencies": {
     "cac": "^6.7.14",

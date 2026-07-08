@@ -116,7 +116,10 @@ export function incrementFramerUsage(): void {
 }
 
 export function isValidLicenseKey(key: string): boolean {
-  // Polar issues keys uppercase with a leading dash, e.g.
-  // "SU_LIVE_-AAAAAAAA-1111-4222-8333-BBBBBBBBBBBB", so match case-insensitively.
+  // Polar issues keys uppercase with a leading dash, in UUID shape, e.g.
+  // "SU_LIVE_-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", so match case-insensitively.
+  // Keep this example non-hex (all X): never put a real, hex-shaped key here.
+  // A real key in shipped source would be published to npm permanently, and
+  // scripts/check-dist-secrets.mjs fails the build on exactly that shape.
   return /^su_live_[a-z0-9_-]{8,}$/i.test(key)
 }

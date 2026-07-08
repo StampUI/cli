@@ -27,7 +27,9 @@ describe("isValidLicenseKey", () => {
   })
 
   it("accepts uppercase keys with a leading dash (Polar format)", () => {
-    expect(isValidLicenseKey("SU_LIVE_-AAAAAAAA-1111-4222-8333-BBBBBBBBBBBB")).toBe(true)
+    // Non-hex placeholder on purpose (see scripts/check-dist-secrets.mjs);
+    // X still exercises the uppercase + leading-dash + UUID-shape path.
+    expect(isValidLicenseKey("SU_LIVE_-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX")).toBe(true)
   })
 
   it("rejects keys with the wrong prefix", () => {
