@@ -2,9 +2,9 @@
 
 All notable changes to the `stampui` CLI. Dates follow the npm publish history. Entries before 1.2.1 predate this changelog and are summarized conservatively rather than reconstructed in detail.
 
-## Unreleased
+## 1.2.2 (2026-07-08)
 
-- CLI `--version` now reads from package.json instead of a hardcoded string (previously reported 1.2.0 on the 1.2.1 build)
+- `stampui --version` now reads from package.json instead of a hardcoded string. The `1.2.1` build reported `1.2.0`; this release correctly reports `1.2.2`.
 - Pure helpers (config, lock file, license key validation) extracted to `src/lib.ts` with a vitest test suite
 - CI (typecheck, build, test) on GitHub Actions
 

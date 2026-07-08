@@ -1,6 +1,6 @@
 {
   "name": "stampui",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "StampUI CLI: stamp production-ready React/Next.js UI blocks into your project",
   "license": "MIT",
   "homepage": "https://stampui.com",
@@ -21,7 +21,9 @@
     "cli",
     "tailwindcss"
   ],
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "bin": "./dist/index.js",
   "engines": {
     "node": ">=18"
