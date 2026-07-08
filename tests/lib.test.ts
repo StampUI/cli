@@ -4,6 +4,7 @@ import os from "os"
 import path from "path"
 import {
   DEFAULT_PROJECT_CONFIG,
+  hasPackageJson,
   readProjectConfig,
   readPackageJson,
   readLockFile,
@@ -70,6 +71,17 @@ describe("readPackageJson", () => {
   it("reads an existing package.json", () => {
     fs.writeFileSync(path.join(tmp, "package.json"), JSON.stringify({ name: "demo-app" }))
     expect(readPackageJson(tmp)).toEqual({ name: "demo-app" })
+  })
+})
+
+describe("hasPackageJson", () => {
+  it("returns false when package.json is missing", () => {
+    expect(hasPackageJson(tmp)).toBe(false)
+  })
+
+  it("returns true when package.json exists", () => {
+    fs.writeFileSync(path.join(tmp, "package.json"), JSON.stringify({ name: "demo-app" }))
+    expect(hasPackageJson(tmp)).toBe(true)
   })
 })
 

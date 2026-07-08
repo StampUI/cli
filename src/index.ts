@@ -8,6 +8,7 @@ import fs from "fs"
 import path from "path"
 import {
   ProjectConfig,
+  hasPackageJson,
   readPackageJson,
   readLockFile,
   writeLockFile,
@@ -141,8 +142,16 @@ cli
 
 cli
   .command("add <block>", "Stamp a block into your project")
-  .action(async (block: string) => {
+  .option("--force", "Allow installing into a directory without package.json")
+  .action(async (block: string, options: { force?: boolean }) => {
     console.log(chalk.bold("\nStampUI\n"))
+
+    if (!options.force && !hasPackageJson()) {
+      console.log(chalk.red(`× No package.json found in ${process.cwd()}.`))
+      console.log(chalk.dim(`  Run ${chalk.cyan("stampui doctor")} for project setup checks.`))
+      console.log(chalk.dim(`  Use ${chalk.cyan("--force")} to stamp into this directory anyway.`))
+      process.exit(1)
+    }
 
     const blockData = manifests[block]
     if (!blockData) {
@@ -443,8 +452,16 @@ cli
 
 cli
   .command("update [block]", "Update installed blocks to the latest version")
-  .action(async (block?: string) => {
+  .option("--force", "Allow updating in a directory without package.json")
+  .action(async (block: string | undefined, options: { force?: boolean }) => {
     console.log(chalk.bold("\nStampUI Update\n"))
+
+    if (!options.force && !hasPackageJson()) {
+      console.log(chalk.red(`× No package.json found in ${process.cwd()}.`))
+      console.log(chalk.dim(`  Run ${chalk.cyan("stampui doctor")} for project setup checks.`))
+      console.log(chalk.dim(`  Use ${chalk.cyan("--force")} to update in this directory anyway.`))
+      process.exit(1)
+    }
 
     const lock = readLockFile()
 
