@@ -6,121 +6,21 @@ import ora from "ora"
 import prompts from "prompts"
 import fs from "fs"
 import path from "path"
-import os from "os"
+import {
+  ProjectConfig,
+  readPackageJson,
+  readLockFile,
+  writeLockFile,
+  readLicense,
+  saveLicense,
+  getLicenseTier,
+  canUseFramer,
+  isValidLicenseKey,
+  LICENSE_FILE,
+} from "./lib"
 import { blockList, manifests } from "@stampui/blocks"
 
 const cli = cac("stampui")
-
-// ── Config helpers ────────────────────────────────────────────────────────────
-
-interface ProjectConfig {
-  componentsPath: string
-  utilsPath: string
-  typescript: boolean
-}
-
-function readProjectConfig(): ProjectConfig {
-  try {
-    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "stampui.config.json"), "utf-8"))
-  } catch {
-    return { componentsPath: "components/blocks", utilsPath: "lib/core", typescript: true }
-  }
-}
-
-function readPackageJson(): Record<string, unknown> {
-  try {
-    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json"), "utf-8"))
-  } catch {
-    return {}
-  }
-}
-
-// ── Lock file helpers ─────────────────────────────────────────────────────────
-
-interface LockEntry {
-  version: string
-  installedAt: string
-}
-
-function readLockFile(): Record<string, LockEntry> {
-  try {
-    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "stampui.lock.json"), "utf-8"))
-  } catch {
-    return {}
-  }
-}
-
-function writeLockFile(lock: Record<string, LockEntry>): void {
-  fs.writeFileSync(
-    path.join(process.cwd(), "stampui.lock.json"),
-    JSON.stringify(lock, null, 2)
-  )
-}
-
-// ── License helpers ───────────────────────────────────────────────────────────
-
-interface LicenseConfig {
-  licenseKey?: string
-  tier?: "free" | "pro" | "team"
-  framerUsed?: number
-  framerLimit?: number
-}
-
-const LICENSE_DIR = path.join(os.homedir(), ".stampui")
-const LICENSE_FILE = path.join(LICENSE_DIR, "config.json")
-
-const FRAMER_FREE_LIMIT = 5
-
-function readLicenseConfig(): LicenseConfig {
-  try {
-    return JSON.parse(fs.readFileSync(LICENSE_FILE, "utf-8"))
-  } catch {
-    return {}
-  }
-}
-
-function readLicense(): string | null {
-  return readLicenseConfig().licenseKey || null
-}
-
-function saveLicense(key: string): void {
-  fs.mkdirSync(LICENSE_DIR, { recursive: true })
-  const existing = readLicenseConfig()
-  fs.writeFileSync(LICENSE_FILE, JSON.stringify({
-    ...existing,
-    licenseKey: key,
-    tier: "pro",
-    framerLimit: -1,
-  }, null, 2))
-}
-
-function getLicenseTier(): "free" | "pro" | "team" {
-  const config = readLicenseConfig()
-  if (!config.licenseKey) return "free"
-  return config.tier || "pro"
-}
-
-function canUseFramer(): { allowed: boolean; used: number; limit: number } {
-  const config = readLicenseConfig()
-  const tier = getLicenseTier()
-  if (tier === "pro" || tier === "team") {
-    return { allowed: true, used: 0, limit: -1 }
-  }
-  const used = config.framerUsed ?? 0
-  const limit = FRAMER_FREE_LIMIT
-  return { allowed: used < limit, used, limit }
-}
-
-function incrementFramerUsage(): void {
-  fs.mkdirSync(LICENSE_DIR, { recursive: true })
-  const config = readLicenseConfig()
-  const used = (config.framerUsed ?? 0) + 1
-  fs.writeFileSync(LICENSE_FILE, JSON.stringify({ ...config, framerUsed: used }, null, 2))
-}
-
-function isValidLicenseKey(key: string): boolean {
-  return /^su_live_[a-zA-Z0-9_-]{8,}$/.test(key)
-}
 
 // ── Registry (pro block delivery) ─────────────────────────────────────────────
 // Pro sources never ship in the npm package. They are fetched from the
@@ -260,7 +160,7 @@ cli
       console.log()
       console.log(chalk.yellow("A StampUI Pro license is required."))
       console.log(`\nActivate your license:`)
-      console.log(chalk.cyan("  stampui login su_live_xxxxx"))
+      console.log(chalk.cyan("  stampui login SU_LIVE_-XXXX"))
       console.log(`\nGet a license at:`)
       console.log(chalk.cyan("  https://stampui.com/pricing"))
       process.exit(1)
@@ -472,7 +372,7 @@ cli
       const response = await prompts({
         type: "password",
         name: "key",
-        message: "Paste your license key (su_live_...)",
+        message: "Paste your license key (SU_LIVE_-...)",
       })
       licenseKey = response.key
     }
@@ -484,7 +384,7 @@ cli
 
     if (!isValidLicenseKey(licenseKey)) {
       console.log(chalk.red("× Invalid license key format."))
-      console.log(chalk.dim("  Expected: su_live_xxxxxxxxxxxxxxxx"))
+      console.log(chalk.dim("  Expected: SU_LIVE_-XXXXXXXX-XXXX-..."))
       console.log(chalk.dim("  Get one:  https://stampui.com/pricing"))
       process.exit(1)
     }
@@ -508,7 +408,7 @@ cli
       }
       if (!isValidLicenseKey(key)) {
         console.log(chalk.red("× Invalid license key format."))
-        console.log(chalk.dim("  Expected: su_live_xxxxxxxxxxxxxxxx"))
+        console.log(chalk.dim("  Expected: SU_LIVE_-XXXXXXXX-XXXX-..."))
         console.log(chalk.dim("  Get one:  https://stampui.com/pricing"))
         process.exit(1)
       }
@@ -532,7 +432,7 @@ cli
         console.log(chalk.yellow("Free tier: no Pro license found."))
         console.log(chalk.dim(`  Framer plugin: ${framer.used}/${framer.limit} components used`))
         console.log()
-        console.log(chalk.dim("  Activate: stampui login su_live_xxxxx"))
+        console.log(chalk.dim("  Activate: stampui login SU_LIVE_-XXXX"))
         console.log(chalk.dim("  Get one:  https://stampui.com/pricing"))
       }
     } else {
@@ -658,5 +558,6 @@ cli
   })
 
 cli.help()
-cli.version("1.2.0")
+// Single source of truth for the version: package.json (resolved from dist/ at runtime).
+cli.version((require("../package.json") as { version: string }).version)
 cli.parse()
